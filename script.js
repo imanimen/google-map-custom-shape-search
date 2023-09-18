@@ -1,6 +1,7 @@
 var map;
 var drawingManager;
 var geocoder;
+var polygonCoordinates = [];
 
 // Callback function to initialize the map
 function initMap() {
@@ -33,11 +34,15 @@ function initMap() {
   google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
     if (event.type === google.maps.drawing.OverlayType.POLYGON) {
       var polygon = event.overlay;
+      
+      // Clear the previous polygon coordinates
+      polygonCoordinates = [];
 
-      // Perform reverse geocoding for each vertex of the polygon
+      // Get the coordinates of the polygon vertices
       var path = polygon.getPath();
       path.forEach(function(latLng) {
-        reverseGeocodeLatLng(latLng);
+        polygonCoordinates.push({ lat: latLng.lat(), lng: latLng.lng() });
+        reverseGeocodeLatLng(latLng.lat(), latLng.lng());
       });
 
       // Disable drawing mode after the polygon is complete
@@ -50,7 +55,8 @@ function initMap() {
 }
 
 // Perform reverse geocoding to retrieve the city name and state
-function reverseGeocodeLatLng(latLng) {
+function reverseGeocodeLatLng(lat, lng) {
+  var latLng = { lat: lat, lng: lng };
   geocoder.geocode({ location: latLng }, function(results, status) {
     if (status === 'OK') {
       if (results[0]) {
@@ -85,10 +91,15 @@ function reverseGeocodeLatLng(latLng) {
   });
 }
 
+// Get the polygon coordinates
+function getPolygonCoordinates() {
+  return polygonCoordinates;
+}
+
 // Load the Google Maps JavaScript API
 function loadGoogleMapsAPI() {
   var script = document.createElement('script');
-  script.src = 'https://maps.googleapis.com/maps/api/js?key=API_KEY&libraries=drawing';
+  script.src = 'https://maps.googleapis.com/maps/api/js?key=API_KEY&callback=initMap&libraries=drawing';
   script.defer = true;
   document.head.appendChild(script);
 }
