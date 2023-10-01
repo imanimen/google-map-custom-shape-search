@@ -47,6 +47,10 @@ function initMap() {
 
       // Disable drawing mode after the polygon is complete
       drawingManager.setDrawingMode(null);
+      
+      // Display the polygonCoordinates output
+      var outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = JSON.stringify(polygonCoordinates, null, 2); // Format the JSON string with indentation
     }
   });
   
@@ -91,15 +95,10 @@ function reverseGeocodeLatLng(lat, lng) {
   });
 }
 
-// Get the polygon coordinates
-function getPolygonCoordinates() {
-  return polygonCoordinates;
-}
-
 // Load the Google Maps JavaScript API
 function loadGoogleMapsAPI() {
   var script = document.createElement('script');
-  script.src = 'https://maps.googleapis.com/maps/api/js?key=API_KEY&callback=initMap&libraries=drawing';
+  script.src = 'https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&libraries=drawing';
   script.defer = true;
   document.head.appendChild(script);
 }
